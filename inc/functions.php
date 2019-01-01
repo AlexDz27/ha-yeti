@@ -33,8 +33,10 @@ function renderPage($content, $pagetitle) {
 function renderLayout($content, $pagetitle) {
   $title = getConfig()['pageTitle'];
   $title .= $pagetitle ? ' | ' . $pagetitle : '';
+  $user = $_SESSION['user'] ?? null;
   return render('layouts/layout', [
     'content' => $content,
+    'user' => $user,
     'pageTitle' => $title,
     'categories' => getMockData()['categories']
   ]);
@@ -78,4 +80,72 @@ function hasStringSubstring($string, $substring) {
 function validateDate($date, $format = 'Y-m-d') {
   $d = DateTime::createFromFormat($format, $date);
   return $d && $d->format($format) == $date;
+}
+
+function validateFieldsNotEmpty($entity, $fields, $msg) {
+  $errors = [];
+  foreach ($fields as $field) {
+    if (empty($entity[$field])) {
+      $errors[$field]['value_missing'] = $msg;
+    }
+  }
+
+  return $errors;
+}
+
+function validateIntFields($entity, $fields, $msg) {
+  $errors = [];
+  foreach ($fields as $field) {
+    $value = (int) $entity[$field];
+    if ($value <= 0) {
+      $errors[$field]['int_required'] = $msg;
+    }
+  }
+
+  return $errors;
+}
+
+function validateDateFields($entity, $fields, $msg) {
+  $errors = [];
+  foreach ($fields as $field) {
+    if (!validateDate($entity[$field])) {
+      $errors[$field]['bad_date'] = $msg;
+    }
+  }
+
+  return $errors;
+}
+
+/**
+ * @return array|null
+ */
+function getCurrentUser() {
+  return $_SESSION['user'];
+}
+
+function isLogged() {
+  return getCurrentUser() !== null;
+}
+
+function guardAuthorizedAccess() {
+  if (getCurrentUser() === null) {
+    redirectBackAsNotAuthorized();
+  }
+}
+
+function redirectToMain() {
+  header('Location: /');
+  die();
+}
+
+function redirectBackAsNotAuthorized() {
+  http_response_code(403);
+  redirectBack();
+}
+
+function redirectBack() {
+  $referrer = $_SERVER['HTTP_REFERER'] ?? null;
+  $location = $referrer ?? '/';
+  header('Location: ' . $location);
+  die();
 }

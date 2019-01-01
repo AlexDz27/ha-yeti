@@ -43,9 +43,6 @@ $errors = $errors ?? [];
     <?php endif; ?>
   </div>
   <div class="form__item form__item--file <?= !empty($lot['lot-img']) ? 'form__item--uploaded' : '' ?>"> <!-- form__item--uploaded -->
-    <?php 
-    var_dump($_FILES);
-    ?>
     <label>Изображение</label>
     <div class="preview">
       <button class="preview__remove" type="button">x</button>

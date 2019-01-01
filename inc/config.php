@@ -1,5 +1,8 @@
 <?php
 
+define('ROOT', dirname(__DIR__) . DIRECTORY_SEPARATOR);
+define('WEB_ROOT', $_SERVER['HTTP_HOST'] . '/');
+
 $GLOBALS['config'] = [
   'appName' => 'yeti-cave',
   'pageTitle' => 'Йети-кейв',

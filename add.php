@@ -1,5 +1,6 @@
 <?php
 
+session_start();
 require_once 'inc/config.php';
 require_once 'inc/functions.php';
 require_once 'inc/data.php';
@@ -9,7 +10,11 @@ if ($config['onService']) {
   return;
 }
 
+
+guardAuthorizedAccess();
+
 $categoryDict = [
+  'not-selected' => 'not-selected',
   'boards-and-skis' => 'Доски и лыжи',
   'fixtures' => 'Крепления',
   'boots' => 'Ботинки',
@@ -30,13 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   $required = ['title', 'category', 'message', 'price', 'lot-step', 'lot-date', 'lot-img'];
-  foreach ($required as $field) {
-    if (empty($lot[$field])) {
-      $errors[$field]['value_missing'] = 'Пожалуйста заполните поле';
-    }
-  }
+  $notEmptyErrors = validateFieldsNotEmpty($lot, $required, 'Пожалуйста заполните поле');
 
-  if (!empty($_FILES['lot-img'])) {
+  if (isset($_FILES['lot-img']) && $_FILES['lot-img']['error'] !== UPLOAD_ERR_NO_FILE) {
     $tmpName = $_FILES['lot-img']['tmp_name'];
     $path = $_FILES['lot-img']['name'];
 
@@ -61,22 +62,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   $intFields = ['price', 'lot-step'];
-  foreach ($intFields as $field) {
-    $value = (int) $lot[$field];
-    if ($value <= 0) {
-      $errors[$field]['int_needed'] = 'Введите целочисленное число';
-    }
-  }
+  $intRequiredErrors = validateIntFields($lot, $intFields, 'Введите целочисленное значение');
 
   $dateFields = ['lot-date'];
-  foreach ($dateFields as $field) {
-    if (!validateDate($lot[$field])) {
-      $errors[$field]['bad_date'] = 'Неверный формат даты';
-    }
-  }
+  $badDateErrors = validateDateFields($lot, $dateFields, 'Неверный формат даты');
 
+  $errors = array_merge($errors, $notEmptyErrors, $intRequiredErrors, $badDateErrors);
   if (!empty($errors)) {
-    echo render('pages/add', compact('lot', 'errors'));
+    echo render('pages/add', compact('lot', 'errors'), 'Добавление лота');
   } else {
     echo render('pages/lot', compact('lot'), $lot['title']);
   }

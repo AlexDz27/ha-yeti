@@ -1,5 +1,6 @@
 <?php
 
+session_start();
 require_once 'inc/config.php';
 require_once 'inc/functions.php';
 require_once 'inc/data.php';
@@ -9,4 +10,10 @@ if ($config['onService']) {
   return;
 }
 
-echo render('pages/index', ['lots' => $lots], 'Главная');
+$user = $_SESSION['user'] ?? null;
+$loggedInMsg = $_SESSION['messages']['logged_in'] ?? null;
+echo render('pages/index', ['lots' => $lots, 'loggedInMsg' => $loggedInMsg], 'Главная');
+
+if (isset($_SESSION['messages']['logged_in'])) {
+  unset($_SESSION['messages']['logged_in']);
+}

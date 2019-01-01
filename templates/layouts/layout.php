@@ -22,7 +22,19 @@
 
         <nav class="user-menu">
 
-        <!-- здесь должен быть PHP код для показа аватара пользователя -->
+            <?php if ($user): ?>
+              <div class="user-menu__image">
+                <img src="img/user.jpg" width="40" height="40" alt="<?= e($user['name']); ?>">
+              </div>
+              <div class="user-menu__logged">
+                <p><?= e($user['name']); ?></p>
+                <a href="logout">Выйти</a>
+              </div>
+            <?php else: ?>
+              <a href="register">Регистрация</a>
+              <a href="login">Вход</a>
+            <?php endif; ?>
+
 
         </nav>
     </div>
