@@ -30,8 +30,8 @@
         </div>
         <?php if (!empty($lots)): ?>
             <ul class="lots__list">
-              <?php foreach ($lots as $id => $lot): ?>
-                <?= render('blocks/lot', ['lot' => $lot, 'id' => $id]) ?>
+              <?php foreach ($lots as $lot): ?>
+                <?= render('blocks/lot', ['lot' => $lot]) ?>
               <?php endforeach; ?>
             </ul>
           <?php endif; ?>

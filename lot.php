@@ -3,6 +3,7 @@
 session_start();
 require_once 'inc/config.php';
 require_once 'inc/functions.php';
+require_once 'inc/db.php';
 require_once 'inc/data.php';
 $config = getConfig();
 if ($config['onService']) {
@@ -10,8 +11,8 @@ if ($config['onService']) {
   return;
 }
 
-$lot_id = $_GET['lot_id'] ?? null;
-$lot = $lots[$lot_id] ?? null;
+$lot_id = (int) $_GET['lot_id'] ?? null;
+$lot = getLotById($lot_id);
 
 if ($lot === null) {
   http_response_code(404);

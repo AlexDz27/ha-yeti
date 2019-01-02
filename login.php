@@ -3,9 +3,10 @@
 session_start();
 require_once 'inc/config.php';
 require_once 'inc/functions.php';
+require_once 'inc/db.php';
 require_once 'inc/data.php';
-$config = getConfig();
-if ($config['onService']) {
+$dbConfig = getConfig();
+if ($dbConfig['onService']) {
   echo render('pages/on-service');
   return;
 }
@@ -23,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   if ($user) {
-    if (password_verify($loginData['password'], $user['password'])) {
+    if (password_verify($loginData['password'], $user['password_hash'])) {
       $_SESSION['user'] = $user;
       $_SESSION['messages']['logged_in'] = 'Вы успешно зашли!';
       header('Location: /');
@@ -34,25 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   $errors = array_merge($errors, $notEmptyErrors);
-  if (empty($errors)) {
-    var_dump($user);
-    die();
-  }
-  
   echo render('pages/login', compact('loginData', 'errors'), 'Войти');
 } else {
   echo render('pages/login', ['errors' => null], 'Войти');
 }
 
-
-function getUserByEmail($email) {
-  global $users;
-
-  foreach ($users as $user) {
-    if ($user['email'] === $email) {
-      return $user;
-    }
-  }
-  
-  return null;
-}

@@ -3,6 +3,7 @@
 session_start();
 require_once 'inc/config.php';
 require_once 'inc/functions.php';
+require_once 'inc/db.php';
 require_once 'inc/data.php';
 $config = getConfig();
 if ($config['onService']) {
@@ -10,6 +11,7 @@ if ($config['onService']) {
   return;
 }
 
+$lots = getNewLots();
 $user = $_SESSION['user'] ?? null;
 $loggedInMsg = $_SESSION['messages']['logged_in'] ?? null;
 echo render('pages/index', ['lots' => $lots, 'loggedInMsg' => $loggedInMsg], 'Главная');

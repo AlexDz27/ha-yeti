@@ -120,7 +120,7 @@ function validateDateFields($entity, $fields, $msg) {
  * @return array|null
  */
 function getCurrentUser() {
-  return $_SESSION['user'];
+  return $_SESSION['user'] ?? null;
 }
 
 function isLogged() {
@@ -148,4 +148,15 @@ function redirectBack() {
   $location = $referrer ?? '/';
   header('Location: ' . $location);
   die();
+}
+
+function convertUnixToMysqlTimestamp($unix) {
+  return date('Y-m-d H:i:s', $unix);
+}
+
+function sendServerErrorMessageOnProd() {
+  if (getConfig()['prodEnv']) {
+    echo '<h1 style="color: #ff4b52">An error occurred in our servers. Please come back in a few minutes</h1>';
+    die();
+  }
 }
