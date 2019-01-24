@@ -127,9 +127,28 @@ function isLogged() {
   return getCurrentUser() !== null;
 }
 
+function setFlashMessage($key, $text) {
+  $_SESSION['messages'][$key] = $text;
+}
+
+function loadLoggedUser($userData) {
+  $_SESSION['user'] = $userData;
+}
+
+function guardNotAuthorizedAccess() {
+  if (isLogged()) {
+    redirectBack();
+  }
+}
+
+function redirectBackAsAuthorized() {
+  http_response_code(302); // FOUND
+  redirectBack();
+}
+
 function guardAuthorizedAccess() {
-  if (getCurrentUser() === null) {
-    redirectBackAsNotAuthorized();
+  if (!isLogged()) {
+    redirectToLogin();
   }
 }
 
@@ -138,12 +157,16 @@ function redirectToMain() {
   die();
 }
 
-function redirectBackAsNotAuthorized() {
+function redirectToLogin() {
   http_response_code(403);
-  redirectBack();
+  header('Location: /login');
 }
 
 function redirectBack() {
+  redirectBackIfPossibleOrMain();
+}
+
+function redirectBackIfPossibleOrMain() {
   $referrer = $_SERVER['HTTP_REFERER'] ?? null;
   $location = $referrer ?? '/';
   header('Location: ' . $location);

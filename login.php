@@ -25,9 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   if ($user) {
     if (password_verify($loginData['password'], $user['password_hash'])) {
-      $_SESSION['user'] = $user;
-      $_SESSION['messages']['logged_in'] = 'Вы успешно зашли!';
-      header('Location: /');
+      loadLoggedUser($user);
+      setFlashMessage('logged_in', 'Вы успешно зашли!');
+      redirectToMain();
       die();
     } else {
       $errors['password']['wrong_password'] = 'Неверный пароль';

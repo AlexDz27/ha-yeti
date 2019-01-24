@@ -15,7 +15,9 @@ $GLOBALS['config'] = [
   ],
   'onService' => false,
   'lotImgAllowedMime' => ['image/jpeg', 'image/png'],
+  'avatarImgAllowedMime' => ['image/jpeg', 'image/png'],
   'uploadsFolder' => 'uploads/lots/',
+  'avatarsUploadsFolder' => 'uploads/avatars/',
   'db' => [
     'host' => 'localhost',
     'name' => 'ha_yeti_cave',
@@ -27,6 +29,10 @@ $GLOBALS['config'] = [
 
 function getUploadsFolder() {
   return getConfig()['uploadsFolder'];
+}
+
+function getAvatarsUploadsFolder() {
+  return getConfig()['avatarsUploadsFolder'];
 }
 
 function getDbConfig() {

@@ -24,6 +24,17 @@ if ($con === null) {
   }
 }
 
+function createUser($userData) {
+  $q = "insert into users (name, email, password_hash, avatar_path, dt_register) VALUES
+ (:name, :email, '{$userData['passwordHash']}', :avatar_path, NOW())";
+
+  runQuery($q, [
+    'name' => $userData['name'],
+    'email' => $userData['email'],
+    'avatar_path' => $userData['avatar_path']
+  ]);
+}
+
 function getNewLots() {
   $q = "select l.id, l.title, l.img_path, l.price, c.title 'category', DATE_FORMAT(b.ts,'%H:%i:%s') 'bet_time' from
  lots l join lots_categories c on l.category_id = c.id left join bets b on b.lot_id = l.id order by l.id DESC";
@@ -37,7 +48,7 @@ function getLotById($id) {
  from lots l join lots_categories c on l.category_id = c.id
   left join bets b on b.lot_id = l.id WHERE l.id = :id order by l.id DESC";
 
-  return fetchSingle($q, ['id' => $id]);
+  return fetchOne($q, ['id' => $id]);
 }
 
 function getLotsByIds(array $ids) {
@@ -52,18 +63,18 @@ function getLotsByIds(array $ids) {
 function getUserByEmail($email) {
   $q = "select * from users where email = :email";
 
-  return fetchSingle($q, ['email' => $email]);
+  return fetchOne($q, ['email' => $email]);
 }
 
 
-function fetchSingle($q, $bindedValues = []) {
-  $res = getPreparedStmt($q, $bindedValues)->fetch();
+function fetchOne($q, $bindedValues = []) {
+  $res = runQuery($q, $bindedValues)->fetch();
 
   return $res ?: null;
 }
 
 function fetchAll($q, $bindedValues = []) {
-  $res = getPreparedStmt($q, $bindedValues)->fetchAll();
+  $res = runQuery($q, $bindedValues)->fetchAll();
   if ($res === false) {
     throwException('Error running query');
   }
@@ -71,7 +82,7 @@ function fetchAll($q, $bindedValues = []) {
   return $res ?? null;
 }
 
-function getPreparedStmt($q, $bindedValues = []) {
+function runQuery($q, $bindedValues = []) {
   global $con;
 
   $stmt = $con->prepare($q);
